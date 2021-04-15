@@ -1,0 +1,4 @@
+(function() {var implementors = {};
+implementors["modular_bitfield"] = [];
+implementors["nvme"] = [{"text":"impl <a class=\"trait\" href=\"modular_bitfield/trait.Specifier.html\" title=\"trait modular_bitfield::Specifier\">Specifier</a> for <a class=\"struct\" href=\"nvme/struct.StatusField.html\" title=\"struct nvme::StatusField\">StatusField</a>","synthetic":false,"types":["nvme::status::StatusField"]},{"text":"impl <a class=\"trait\" href=\"modular_bitfield/trait.Specifier.html\" title=\"trait modular_bitfield::Specifier\">Specifier</a> for <a class=\"enum\" href=\"nvme/enum.StatusCodeType.html\" title=\"enum nvme::StatusCodeType\">StatusCodeType</a>","synthetic":false,"types":["nvme::status::StatusCodeType"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

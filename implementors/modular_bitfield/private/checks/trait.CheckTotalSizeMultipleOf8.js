@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["nvme"] = [{"text":"impl CheckTotalSizeMultipleOf8 for <a class=\"struct\" href=\"nvme/struct.ParamErrLoc.html\" title=\"struct nvme::ParamErrLoc\">ParamErrLoc</a>","synthetic":false,"types":["nvme::logpage::err::ParamErrLoc"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
