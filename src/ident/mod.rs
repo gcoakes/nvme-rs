@@ -20,12 +20,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-mod ident;
-#[doc(inline)]
-pub use ident::*;
-mod logpage;
-#[doc(inline)]
-pub use logpage::*;
-mod status;
-#[doc(inline)]
-pub use status::*;
+mod ctrl;
+pub use ctrl::IdCtrl;
+mod nmsp;
+pub use nmsp::IdNmsp;

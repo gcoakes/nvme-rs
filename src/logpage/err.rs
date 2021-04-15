@@ -20,12 +20,38 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-mod ident;
-#[doc(inline)]
-pub use ident::*;
-mod logpage;
-#[doc(inline)]
-pub use logpage::*;
-mod status;
-#[doc(inline)]
-pub use status::*;
+use crate::StatusField;
+
+use modular_bitfield::prelude::*;
+
+#[repr(packed)]
+pub struct ErrLogEntry {
+    pub err_count: u64,
+    pub submission_queue_id: u16,
+    pub command_id: u16,
+    pub status_field: StatusField,
+    pub param_err_loc: ParamErrLoc,
+    pub lba: u64,
+    pub nmsp: u32,
+    pub vendor_specific_info_available: u8,
+    pub trtype: u8,
+    __rsvd30: u16,
+    pub cmd_specific_info: u64,
+    pub transport_type_specific_info: u16,
+    __rsvd42: [u8; 22],
+}
+
+#[bitfield]
+pub struct ParamErrLoc {
+    byte: u8,
+    bit: B3,
+    #[skip]
+    __: B5,
+}
+
+#[test]
+fn structure() {
+    use std::mem;
+    assert_eq!(mem::size_of::<ParamErrLoc>(), 2);
+    assert_eq!(mem::size_of::<ErrLogEntry>(), 64);
+}

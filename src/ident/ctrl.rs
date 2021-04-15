@@ -20,12 +20,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-mod ident;
-#[doc(inline)]
-pub use ident::*;
-mod logpage;
-#[doc(inline)]
-pub use logpage::*;
-mod status;
-#[doc(inline)]
-pub use status::*;
+pub struct IdCtrl([u8; 4096]);
+
+#[test]
+fn structure() {
+    use std::mem;
+    assert_eq!(mem::size_of::<IdCtrl>(), 4096);
+}

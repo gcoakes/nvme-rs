@@ -20,12 +20,9 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-mod ident;
-#[doc(inline)]
-pub use ident::*;
-mod logpage;
-#[doc(inline)]
-pub use logpage::*;
-mod status;
-#[doc(inline)]
-pub use status::*;
+mod err;
+pub use err::*;
+mod fw_slot;
+pub use fw_slot::*;
+mod smart;
+pub use smart::*;

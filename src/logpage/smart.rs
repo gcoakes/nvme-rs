@@ -20,12 +20,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-mod ident;
-#[doc(inline)]
-pub use ident::*;
-mod logpage;
-#[doc(inline)]
-pub use logpage::*;
-mod status;
-#[doc(inline)]
-pub use status::*;
+pub struct SmartLog([u8; 512]);
+
+#[test]
+fn structure() {
+    use std::mem;
+    assert_eq!(mem::size_of::<SmartLog>(), 512);
+}

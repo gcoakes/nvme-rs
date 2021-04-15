@@ -11,7 +11,7 @@
         with pkgs; {
           # `nix develop`
           devShell = mkShell {
-            nativeBuildInputs = [ rustc cargo ];
+            nativeBuildInputs = [ rustc cargo cargo-edit ];
           };
         }
     );
