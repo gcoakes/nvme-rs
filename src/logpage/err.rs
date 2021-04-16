@@ -25,12 +25,12 @@ use modular_bitfield::prelude::*;
 pub struct ErrLogEntry {
     pub err_count: u64,
     pub submission_queue_id: u16,
-    pub command_id: u16,
+    pub cmd_id: u16,
     pub status_field: StatusField,
     pub param_err_loc: ParamErrLoc,
     pub lba: u64,
     pub nmsp: u32,
-    pub vendor_specific_info_available: u8,
+    pub vndr_specific_info_avail: u8,
     pub trtype: u8,
     __rsvd30: u16,
     pub cmd_specific_info: u64,
@@ -40,8 +40,8 @@ pub struct ErrLogEntry {
 
 #[bitfield]
 pub struct ParamErrLoc {
-    byte: u8,
-    bit: B3,
+    pub byte: u8,
+    pub bit: B3,
     #[skip]
     __: B5,
 }

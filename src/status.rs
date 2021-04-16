@@ -25,12 +25,12 @@ use num_traits::FromPrimitive;
 #[bitfield(bits = 16)]
 #[derive(BitfieldSpecifier, Debug)]
 pub struct StatusField {
-    phase_tag: bool,
-    sc: u8,
-    sct: StatusCodeType,
-    crd: B2,
-    more: bool,
-    dnr: bool,
+    pub phase_tag: bool,
+    pub sc: u8,
+    pub sct: StatusCodeType,
+    pub crd: B2,
+    pub more: bool,
+    pub dnr: bool,
 }
 
 impl StatusField {
@@ -39,11 +39,11 @@ impl StatusField {
         match self.sct() {
             StatusCodeType::Generic => FromPrimitive::from_u8(sc).map(StatusCode::Generic),
             StatusCodeType::CmdSpecific => FromPrimitive::from_u8(sc).map(StatusCode::CmdSpecific),
-            StatusCodeType::MediaAndDataIntegrity => {
-                FromPrimitive::from_u8(sc).map(StatusCode::MediaAndDataIntegrity)
+            StatusCodeType::MadIntegrity => {
+                FromPrimitive::from_u8(sc).map(StatusCode::MadIntegrity)
             }
             StatusCodeType::PathRelated => FromPrimitive::from_u8(sc).map(StatusCode::PathRelated),
-            StatusCodeType::VendorSpecific => Some(StatusCode::VendorSpecific(sc)),
+            StatusCodeType::VndrSpecific => Some(StatusCode::VndrSpecific(sc)),
             _ => Some(StatusCode::Unknown(sc)),
         }
         .unwrap_or(StatusCode::Unknown(sc))
@@ -58,9 +58,9 @@ impl StatusField {
 pub enum StatusCode {
     Generic(GenericStatus),
     CmdSpecific(CmdSpecificStatus),
-    MediaAndDataIntegrity(MediaAndDataIntegrityStatus),
+    MadIntegrity(MadIntegrityStatus),
     PathRelated(PathRelatedStatus),
-    VendorSpecific(u8),
+    VndrSpecific(u8),
     Unknown(u8),
 }
 
@@ -69,7 +69,7 @@ pub enum StatusCode {
 pub enum StatusCodeType {
     Generic = 0,
     CmdSpecific = 1,
-    MediaAndDataIntegrity = 2,
+    MadIntegrity = 2,
     PathRelated = 3,
 
     // The enum must exhaust the bits or else it can't reliably be transmuted.
@@ -80,7 +80,7 @@ pub enum StatusCodeType {
     #[doc(hidden)]
     _Reserved6 = 6,
 
-    VendorSpecific = 7,
+    VndrSpecific = 7,
 }
 
 #[repr(u8)]
@@ -185,7 +185,7 @@ impl Copy for CmdSpecificStatus {}
 #[repr(u8)]
 #[non_exhaustive]
 #[derive(Clone, Debug, PartialEq, Eq, num_derive::FromPrimitive)]
-pub enum MediaAndDataIntegrityStatus {
+pub enum MadIntegrityStatus {
     WriteFault = 0x80,
     UnrecoveredReadErr = 0x81,
     E2EGuardCheckErr = 0x82,
@@ -196,7 +196,7 @@ pub enum MediaAndDataIntegrityStatus {
     DeallocatedOrUnwrittenLogicalBlock = 0x87,
 }
 
-impl Copy for MediaAndDataIntegrityStatus {}
+impl Copy for MadIntegrityStatus {}
 
 #[repr(u8)]
 #[non_exhaustive]
