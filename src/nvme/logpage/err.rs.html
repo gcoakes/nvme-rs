@@ -55,6 +55,13 @@
 <span id="52">52</span>
 <span id="53">53</span>
 <span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * Copyright (C) 2021  Oakes, Gregory C. &lt;gregcoakes@gmail.com&gt;
@@ -75,7 +82,7 @@
  * &lt;http://www.gnu.org/licenses/&gt;.
  */</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::StatusField</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">FromBytes</span>, <span class="ident">StatusField</span>};
 
 <span class="kw">use</span> <span class="ident">modular_bitfield::prelude</span>::<span class="kw-2">*</span>;
 
@@ -83,12 +90,12 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ErrLogEntry</span> {
     <span class="kw">pub</span> <span class="ident">err_count</span>: <span class="ident">u64</span>,
     <span class="kw">pub</span> <span class="ident">submission_queue_id</span>: <span class="ident">u16</span>,
-    <span class="kw">pub</span> <span class="ident">command_id</span>: <span class="ident">u16</span>,
+    <span class="kw">pub</span> <span class="ident">cmd_id</span>: <span class="ident">u16</span>,
     <span class="kw">pub</span> <span class="ident">status_field</span>: <span class="ident">StatusField</span>,
     <span class="kw">pub</span> <span class="ident">param_err_loc</span>: <span class="ident">ParamErrLoc</span>,
     <span class="kw">pub</span> <span class="ident">lba</span>: <span class="ident">u64</span>,
     <span class="kw">pub</span> <span class="ident">nmsp</span>: <span class="ident">u32</span>,
-    <span class="kw">pub</span> <span class="ident">vendor_specific_info_available</span>: <span class="ident">u8</span>,
+    <span class="kw">pub</span> <span class="ident">vndr_specific_info_avail</span>: <span class="ident">u8</span>,
     <span class="kw">pub</span> <span class="ident">trtype</span>: <span class="ident">u8</span>,
     <span class="ident">__rsvd30</span>: <span class="ident">u16</span>,
     <span class="kw">pub</span> <span class="ident">cmd_specific_info</span>: <span class="ident">u64</span>,
@@ -98,10 +105,17 @@
 
 <span class="attribute">#[<span class="ident">bitfield</span>]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParamErrLoc</span> {
-    <span class="ident">byte</span>: <span class="ident">u8</span>,
-    <span class="ident">bit</span>: <span class="ident">B3</span>,
+    <span class="kw">pub</span> <span class="ident">byte</span>: <span class="ident">u8</span>,
+    <span class="kw">pub</span> <span class="ident">bit</span>: <span class="ident">B3</span>,
     <span class="attribute">#[<span class="ident">skip</span>]</span>
     <span class="ident">__</span>: <span class="ident">B5</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">FromBytes</span> <span class="kw">for</span> [<span class="ident">ErrLogEntry</span>] {
+    <span class="kw">fn</span> <span class="ident">from_bytes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span> {
+        <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">bytes</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">ErrLogEntry</span><span class="op">&gt;</span>();
+        <span class="kw">unsafe</span> { <span class="ident">std::slice::from_raw_parts</span>(<span class="ident">bytes</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ErrLogEntry</span>, <span class="ident">cnt</span>) }
+    }
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>

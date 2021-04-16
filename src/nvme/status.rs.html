@@ -264,12 +264,12 @@
 <span class="attribute">#[<span class="ident">bitfield</span>(<span class="ident">bits</span> <span class="op">=</span> <span class="number">16</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">BitfieldSpecifier</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">StatusField</span> {
-    <span class="ident">phase_tag</span>: <span class="ident">bool</span>,
-    <span class="ident">sc</span>: <span class="ident">u8</span>,
-    <span class="ident">sct</span>: <span class="ident">StatusCodeType</span>,
-    <span class="ident">crd</span>: <span class="ident">B2</span>,
-    <span class="ident">more</span>: <span class="ident">bool</span>,
-    <span class="ident">dnr</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">phase_tag</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">sc</span>: <span class="ident">u8</span>,
+    <span class="kw">pub</span> <span class="ident">sct</span>: <span class="ident">StatusCodeType</span>,
+    <span class="kw">pub</span> <span class="ident">crd</span>: <span class="ident">B2</span>,
+    <span class="kw">pub</span> <span class="ident">more</span>: <span class="ident">bool</span>,
+    <span class="kw">pub</span> <span class="ident">dnr</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">StatusField</span> {
@@ -278,11 +278,11 @@
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">sct</span>() {
             <span class="ident">StatusCodeType::Generic</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">FromPrimitive::from_u8</span>(<span class="ident">sc</span>).<span class="ident">map</span>(<span class="ident">StatusCode::Generic</span>),
             <span class="ident">StatusCodeType::CmdSpecific</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">FromPrimitive::from_u8</span>(<span class="ident">sc</span>).<span class="ident">map</span>(<span class="ident">StatusCode::CmdSpecific</span>),
-            <span class="ident">StatusCodeType::MediaAndDataIntegrity</span> <span class="op">=</span><span class="op">&gt;</span> {
-                <span class="ident">FromPrimitive::from_u8</span>(<span class="ident">sc</span>).<span class="ident">map</span>(<span class="ident">StatusCode::MediaAndDataIntegrity</span>)
+            <span class="ident">StatusCodeType::MadIntegrity</span> <span class="op">=</span><span class="op">&gt;</span> {
+                <span class="ident">FromPrimitive::from_u8</span>(<span class="ident">sc</span>).<span class="ident">map</span>(<span class="ident">StatusCode::MadIntegrity</span>)
             }
             <span class="ident">StatusCodeType::PathRelated</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">FromPrimitive::from_u8</span>(<span class="ident">sc</span>).<span class="ident">map</span>(<span class="ident">StatusCode::PathRelated</span>),
-            <span class="ident">StatusCodeType::VendorSpecific</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">StatusCode::VendorSpecific</span>(<span class="ident">sc</span>)),
+            <span class="ident">StatusCodeType::VndrSpecific</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">StatusCode::VndrSpecific</span>(<span class="ident">sc</span>)),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">StatusCode::Unknown</span>(<span class="ident">sc</span>)),
         }
         .<span class="ident">unwrap_or</span>(<span class="ident">StatusCode::Unknown</span>(<span class="ident">sc</span>))
@@ -297,9 +297,9 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StatusCode</span> {
     <span class="ident">Generic</span>(<span class="ident">GenericStatus</span>),
     <span class="ident">CmdSpecific</span>(<span class="ident">CmdSpecificStatus</span>),
-    <span class="ident">MediaAndDataIntegrity</span>(<span class="ident">MediaAndDataIntegrityStatus</span>),
+    <span class="ident">MadIntegrity</span>(<span class="ident">MadIntegrityStatus</span>),
     <span class="ident">PathRelated</span>(<span class="ident">PathRelatedStatus</span>),
-    <span class="ident">VendorSpecific</span>(<span class="ident">u8</span>),
+    <span class="ident">VndrSpecific</span>(<span class="ident">u8</span>),
     <span class="ident">Unknown</span>(<span class="ident">u8</span>),
 }
 
@@ -308,7 +308,7 @@
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">StatusCodeType</span> {
     <span class="ident">Generic</span> <span class="op">=</span> <span class="number">0</span>,
     <span class="ident">CmdSpecific</span> <span class="op">=</span> <span class="number">1</span>,
-    <span class="ident">MediaAndDataIntegrity</span> <span class="op">=</span> <span class="number">2</span>,
+    <span class="ident">MadIntegrity</span> <span class="op">=</span> <span class="number">2</span>,
     <span class="ident">PathRelated</span> <span class="op">=</span> <span class="number">3</span>,
 
     <span class="comment">// The enum must exhaust the bits or else it can&#39;t reliably be transmuted.</span>
@@ -319,7 +319,7 @@
     <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
     <span class="ident">_Reserved6</span> <span class="op">=</span> <span class="number">6</span>,
 
-    <span class="ident">VendorSpecific</span> <span class="op">=</span> <span class="number">7</span>,
+    <span class="ident">VndrSpecific</span> <span class="op">=</span> <span class="number">7</span>,
 }
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u8</span>)]</span>
@@ -424,7 +424,7 @@
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u8</span>)]</span>
 <span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">num_derive::FromPrimitive</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MediaAndDataIntegrityStatus</span> {
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">MadIntegrityStatus</span> {
     <span class="ident">WriteFault</span> <span class="op">=</span> <span class="number">0x80</span>,
     <span class="ident">UnrecoveredReadErr</span> <span class="op">=</span> <span class="number">0x81</span>,
     <span class="ident">E2EGuardCheckErr</span> <span class="op">=</span> <span class="number">0x82</span>,
@@ -435,7 +435,7 @@
     <span class="ident">DeallocatedOrUnwrittenLogicalBlock</span> <span class="op">=</span> <span class="number">0x87</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">Copy</span> <span class="kw">for</span> <span class="ident">MediaAndDataIntegrityStatus</span> {}
+<span class="kw">impl</span> <span class="ident">Copy</span> <span class="kw">for</span> <span class="ident">MadIntegrityStatus</span> {}
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">u8</span>)]</span>
 <span class="attribute">#[<span class="ident">non_exhaustive</span>]</span>
