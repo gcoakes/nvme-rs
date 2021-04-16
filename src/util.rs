@@ -17,18 +17,6 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-use crate::FromBytes;
-
-pub struct IdCtrl([u8; 4096]);
-
-impl FromBytes for IdCtrl {
-    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
-        unsafe { &*(bytes.as_ptr() as *const Self) }
-    }
-}
-
-#[test]
-fn structure() {
-    use std::mem;
-    assert_eq!(mem::size_of::<IdCtrl>(), 4096);
+pub trait FromBytes {
+    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self;
 }

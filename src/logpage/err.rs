@@ -17,7 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-use crate::StatusField;
+use crate::{FromBytes, StatusField};
 
 use modular_bitfield::prelude::*;
 
@@ -44,6 +44,13 @@ pub struct ParamErrLoc {
     pub bit: B3,
     #[skip]
     __: B5,
+}
+
+impl FromBytes for [ErrLogEntry] {
+    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
+        let cnt = bytes.len() / std::mem::size_of::<ErrLogEntry>();
+        unsafe { std::slice::from_raw_parts(bytes.as_ptr() as *const ErrLogEntry, cnt) }
+    }
 }
 
 #[test]

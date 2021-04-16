@@ -26,3 +26,5 @@ pub use logpage::*;
 mod status;
 #[doc(inline)]
 pub use status::*;
+mod util;
+pub use util::FromBytes;

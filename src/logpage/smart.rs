@@ -17,9 +17,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+use crate::FromBytes;
+
 use modular_bitfield::prelude::*;
 
 #[repr(packed)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct SmartLog {
     pub crit_warning: u8,
     pub comp_temp: u16,
@@ -27,11 +30,12 @@ pub struct SmartLog {
     pub avail_spare_thresh: u8,
     pub percent_used: u8,
     pub endur_grp_crit_warning: u8,
+    #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd7: [u8; 25],
     pub data_units_read: u128,
     pub data_units_written: u128,
-    pub host_read_commands: u128,
-    pub host_write_commands: u128,
+    pub host_read_cmds: u128,
+    pub host_write_cmds: u128,
     pub ctrl_busy_time: u128,
     pub pwr_cycles: u128,
     pub pwr_on_hrs: u128,
@@ -41,10 +45,9 @@ pub struct SmartLog {
     pub warning_comp_temp_time: u32,
     pub crit_comp_temp_time: u32,
     pub temp_sensors: [u16; 8],
-    pub therm_mgmt_temp_1_transition_cnts: u32,
-    pub therm_mgmt_temp_2_transition_cnts: u32,
-    pub total_time_therm_mgmt_temp_1: u32,
-    pub total_time_therm_mgmt_temp_2: u32,
+    pub therm_mgmt_temp_transition_cnts: [u32; 2],
+    pub total_time_therm_mgmt_temp: [u32; 2],
+    #[cfg_attr(feature = "serde", serde(skip, default = "rsvd232_def"))]
     __rsvd232: [u8; 280],
 }
 
@@ -63,7 +66,14 @@ impl SmartLog {
     }
 }
 
+impl FromBytes for SmartLog {
+    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
+        unsafe { &*(bytes.as_ptr() as *const Self) }
+    }
+}
+
 #[bitfield]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct CriticalWarning {
     pub spare_cap_below_thresh: bool,
     pub temp_out_of_thresh: bool,
@@ -76,6 +86,7 @@ pub struct CriticalWarning {
 }
 
 #[bitfield]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct EndurGrpCritWarning {
     pub spare_cap_below_thresh: bool,
     #[skip]
@@ -84,6 +95,10 @@ pub struct EndurGrpCritWarning {
     pub readonly: bool,
     #[skip]
     __: B4,
+}
+
+fn rsvd232_def() -> [u8; 280] {
+    [0; 280]
 }
 
 #[test]

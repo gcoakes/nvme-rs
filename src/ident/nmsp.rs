@@ -17,7 +17,15 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+use crate::FromBytes;
+
 pub struct IdNmsp([u8; 4096]);
+
+impl FromBytes for IdNmsp {
+    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
+        unsafe { &*(bytes.as_ptr() as *const Self) }
+    }
+}
 
 #[test]
 fn structure() {
