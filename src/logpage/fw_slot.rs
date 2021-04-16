@@ -17,7 +17,21 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-pub struct FwSlotLog([u8; 512]);
+use std::borrow::Cow;
+
+#[repr(packed)]
+pub struct FwSlotLog {
+    pub afi: u8,
+    __rsvd1: [u8; 7],
+    pub fw_rev_slots: [[u8; 8]; 7],
+    __rsvd64: [u8; 448],
+}
+
+impl FwSlotLog {
+    pub fn get_slot<'a>(&'a self, index: usize) -> Cow<'a, str> {
+        String::from_utf8_lossy(&self.fw_rev_slots[index][..])
+    }
+}
 
 #[test]
 fn structure() {
