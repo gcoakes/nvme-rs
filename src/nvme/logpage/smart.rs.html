@@ -104,10 +104,6 @@
 <span id="101">101</span>
 <span id="102">102</span>
 <span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * Copyright (C) 2021  Oakes, Gregory C. &lt;gregcoakes@gmail.com&gt;
@@ -116,7 +112,7 @@
  * This program is free software: you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
+ * version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -128,7 +124,7 @@
  * &lt;http://www.gnu.org/licenses/&gt;.
  */</span>
 
-<span class="kw">use</span> <span class="kw">crate</span><span class="ident">::FromBytes</span>;
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">FromBytes</span>, <span class="ident">Reserved</span>};
 
 <span class="kw">use</span> <span class="ident">modular_bitfield::prelude</span>::<span class="kw-2">*</span>;
 
@@ -142,7 +138,7 @@
     <span class="kw">pub</span> <span class="ident">percent_used</span>: <span class="ident">u8</span>,
     <span class="kw">pub</span> <span class="ident">endur_grp_crit_warning</span>: <span class="ident">u8</span>,
     <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">serde</span>(<span class="ident">skip</span>))]</span>
-    <span class="ident">__rsvd7</span>: [<span class="ident">u8</span>; <span class="number">25</span>],
+    <span class="ident">__rsvd7</span>: <span class="ident">Reserved</span><span class="op">&lt;</span><span class="number">25</span><span class="op">&gt;</span>,
     <span class="kw">pub</span> <span class="ident">data_units_read</span>: <span class="ident">u128</span>,
     <span class="kw">pub</span> <span class="ident">data_units_written</span>: <span class="ident">u128</span>,
     <span class="kw">pub</span> <span class="ident">host_read_cmds</span>: <span class="ident">u128</span>,
@@ -158,8 +154,8 @@
     <span class="kw">pub</span> <span class="ident">temp_sensors</span>: [<span class="ident">u16</span>; <span class="number">8</span>],
     <span class="kw">pub</span> <span class="ident">therm_mgmt_temp_transition_cnts</span>: [<span class="ident">u32</span>; <span class="number">2</span>],
     <span class="kw">pub</span> <span class="ident">total_time_therm_mgmt_temp</span>: [<span class="ident">u32</span>; <span class="number">2</span>],
-    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">serde</span>(<span class="ident">skip</span>, <span class="ident">default</span> <span class="op">=</span> <span class="string">&quot;rsvd232_def&quot;</span>))]</span>
-    <span class="ident">__rsvd232</span>: [<span class="ident">u8</span>; <span class="number">280</span>],
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">serde</span>(<span class="ident">skip</span>))]</span>
+    <span class="ident">__rsvd232</span>: <span class="ident">Reserved</span><span class="op">&lt;</span><span class="number">280</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span> <span class="ident">SmartLog</span> {
@@ -205,10 +201,6 @@
     <span class="kw">pub</span> <span class="ident">readonly</span>: <span class="ident">bool</span>,
     <span class="attribute">#[<span class="ident">skip</span>]</span>
     <span class="ident">__</span>: <span class="ident">B4</span>,
-}
-
-<span class="kw">fn</span> <span class="ident">rsvd232_def</span>() <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="number">280</span>] {
-    [<span class="number">0</span>; <span class="number">280</span>]
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
