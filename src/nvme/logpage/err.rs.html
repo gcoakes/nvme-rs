@@ -62,6 +62,31 @@
 <span id="59">59</span>
 <span id="60">60</span>
 <span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * Copyright (C) 2021  Oakes, Gregory C. &lt;gregcoakes@gmail.com&gt;
@@ -87,23 +112,29 @@
 <span class="kw">use</span> <span class="ident">modular_bitfield::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="attribute">#[<span class="ident">repr</span>(<span class="ident">packed</span>)]</span>
+<span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>))]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ErrLogEntry</span> {
     <span class="kw">pub</span> <span class="ident">err_count</span>: <span class="ident">u64</span>,
     <span class="kw">pub</span> <span class="ident">submission_queue_id</span>: <span class="ident">u16</span>,
     <span class="kw">pub</span> <span class="ident">cmd_id</span>: <span class="ident">u16</span>,
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">serde</span>(<span class="ident">with</span> <span class="op">=</span> <span class="string">&quot;crate::status::StatusFieldUnpacked&quot;</span>))]</span>
     <span class="kw">pub</span> <span class="ident">status_field</span>: <span class="ident">StatusField</span>,
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">serde</span>(<span class="ident">with</span> <span class="op">=</span> <span class="string">&quot;ParamErrLocUnpacked&quot;</span>))]</span>
     <span class="kw">pub</span> <span class="ident">param_err_loc</span>: <span class="ident">ParamErrLoc</span>,
     <span class="kw">pub</span> <span class="ident">lba</span>: <span class="ident">u64</span>,
     <span class="kw">pub</span> <span class="ident">nmsp</span>: <span class="ident">u32</span>,
     <span class="kw">pub</span> <span class="ident">vndr_specific_info_avail</span>: <span class="ident">u8</span>,
     <span class="kw">pub</span> <span class="ident">trtype</span>: <span class="ident">u8</span>,
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">serde</span>(<span class="ident">skip</span>))]</span>
     <span class="ident">__rsvd30</span>: <span class="ident">u16</span>,
     <span class="kw">pub</span> <span class="ident">cmd_specific_info</span>: <span class="ident">u64</span>,
     <span class="kw">pub</span> <span class="ident">transport_type_specific_info</span>: <span class="ident">u16</span>,
+    <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">serde</span>(<span class="ident">skip</span>))]</span>
     <span class="ident">__rsvd42</span>: [<span class="ident">u8</span>; <span class="number">22</span>],
 }
 
 <span class="attribute">#[<span class="ident">bitfield</span>]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParamErrLoc</span> {
     <span class="kw">pub</span> <span class="ident">byte</span>: <span class="ident">u8</span>,
     <span class="kw">pub</span> <span class="ident">bit</span>: <span class="ident">B3</span>,
@@ -115,6 +146,25 @@
     <span class="kw">fn</span> <span class="ident">from_bytes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">bytes</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">ErrLogEntry</span><span class="op">&gt;</span>();
         <span class="kw">unsafe</span> { <span class="ident">std::slice::from_raw_parts</span>(<span class="ident">bytes</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ErrLogEntry</span>, <span class="ident">cnt</span>) }
+    }
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>)]</span>
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">remote</span> <span class="op">=</span> <span class="string">&quot;ParamErrLoc&quot;</span>)]</span>
+<span class="kw">struct</span> <span class="ident">ParamErrLocUnpacked</span> {
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">getter</span> <span class="op">=</span> <span class="string">&quot;ParamErrLoc::byte&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">byte</span>: <span class="ident">u8</span>,
+    <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">getter</span> <span class="op">=</span> <span class="string">&quot;ParamErrLoc::bit&quot;</span>)]</span>
+    <span class="kw">pub</span> <span class="ident">bit</span>: <span class="ident">u8</span>,
+}
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ParamErrLocUnpacked</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ParamErrLoc</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">unpacked</span>: <span class="ident">ParamErrLocUnpacked</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+        <span class="ident">ParamErrLoc::new</span>()
+            .<span class="ident">with_byte</span>(<span class="ident">unpacked</span>.<span class="ident">byte</span>)
+            .<span class="ident">with_bit</span>(<span class="ident">unpacked</span>.<span class="ident">bit</span>)
     }
 }
 

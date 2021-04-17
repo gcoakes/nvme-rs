@@ -127,7 +127,6 @@
 <span id="124">124</span>
 <span id="125">125</span>
 <span id="126">126</span>
-<span id="127">127</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * Copyright (C) 2021  Oakes, Gregory C. &lt;gregcoakes@gmail.com&gt;
@@ -181,7 +180,7 @@
 
 <span class="attribute">#[<span class="ident">bitfield</span>]</span>
 <span class="attribute">#[<span class="ident">cfg_attr</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>, <span class="ident">derive</span>(<span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>))]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ActiveFwInfo</span> {
     <span class="kw">pub</span> <span class="ident">active_slot</span>: <span class="ident">B3</span>,
     <span class="attribute">#[<span class="ident">skip</span>]</span>
@@ -190,8 +189,6 @@
     <span class="attribute">#[<span class="ident">skip</span>]</span>
     <span class="ident">__</span>: <span class="ident">B1</span>,
 }
-
-<span class="kw">impl</span> <span class="ident">Copy</span> <span class="kw">for</span> <span class="ident">ActiveFwInfo</span> {}
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">serde::Serialize</span>, <span class="ident">serde::Deserialize</span>)]</span>
@@ -203,6 +200,7 @@
     <span class="kw">pub</span> <span class="ident">next_active</span>: <span class="ident">u8</span>,
 }
 
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">ActiveFwInfoUnpacked</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">ActiveFwInfo</span> {
     <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">unpacked</span>: <span class="ident">ActiveFwInfoUnpacked</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">ActiveFwInfo::new</span>()
