@@ -30,4 +30,5 @@ pub use status::{
     StatusCodeType, StatusField,
 };
 mod util;
-pub use util::FromBytes;
+#[doc(inline)]
+pub use util::{FixedStr, FromBytes, Reserved};

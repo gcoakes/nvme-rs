@@ -17,7 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-use crate::FromBytes;
+use crate::{FromBytes, Reserved};
 
 use modular_bitfield::prelude::*;
 
@@ -31,7 +31,7 @@ pub struct SmartLog {
     pub percent_used: u8,
     pub endur_grp_crit_warning: u8,
     #[cfg_attr(feature = "serde", serde(skip))]
-    __rsvd7: [u8; 25],
+    __rsvd7: Reserved<25>,
     pub data_units_read: u128,
     pub data_units_written: u128,
     pub host_read_cmds: u128,
@@ -47,8 +47,8 @@ pub struct SmartLog {
     pub temp_sensors: [u16; 8],
     pub therm_mgmt_temp_transition_cnts: [u32; 2],
     pub total_time_therm_mgmt_temp: [u32; 2],
-    #[cfg_attr(feature = "serde", serde(skip, default = "rsvd232_def"))]
-    __rsvd232: [u8; 280],
+    #[cfg_attr(feature = "serde", serde(skip))]
+    __rsvd232: Reserved<280>,
 }
 
 impl SmartLog {
@@ -94,10 +94,6 @@ pub struct EndurGrpCritWarning {
     pub readonly: bool,
     #[skip]
     __: B4,
-}
-
-fn rsvd232_def() -> [u8; 280] {
-    [0; 280]
 }
 
 #[test]

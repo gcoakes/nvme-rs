@@ -17,7 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-use crate::{FromBytes, StatusField};
+use crate::{FromBytes, Reserved, StatusField};
 
 use modular_bitfield::prelude::*;
 
@@ -36,11 +36,11 @@ pub struct ErrLogEntry {
     pub vndr_specific_info_avail: u8,
     pub trtype: u8,
     #[cfg_attr(feature = "serde", serde(skip))]
-    __rsvd30: u16,
+    __rsvd30: Reserved<2>,
     pub cmd_specific_info: u64,
     pub transport_type_specific_info: u16,
     #[cfg_attr(feature = "serde", serde(skip))]
-    __rsvd42: [u8; 22],
+    __rsvd42: Reserved<22>,
 }
 
 #[bitfield]
