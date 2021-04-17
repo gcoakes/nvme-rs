@@ -18,12 +18,13 @@
  */
 
 use modular_bitfield::prelude::*;
-use num_traits::FromPrimitive;
+use num_traits::{FromPrimitive, ToPrimitive};
 
 /// This includes the phase tag which is inconsistent with the specification. This is done so it is
 /// aligned properly.
 #[bitfield(bits = 16)]
-#[derive(BitfieldSpecifier, Debug)]
+#[derive(BitfieldSpecifier, Clone, Copy, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct StatusField {
     pub phase_tag: bool,
     pub sc: u8,
@@ -33,10 +34,41 @@ pub struct StatusField {
     pub dnr: bool,
 }
 
+#[cfg(feature = "serde")]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(remote = "StatusField")]
+pub struct StatusFieldUnpacked {
+    #[serde(getter = "StatusField::phase_tag")]
+    pub phase_tag: bool,
+    #[serde(getter = "StatusField::status_code")]
+    pub status_code: StatusCode,
+    #[serde(getter = "StatusField::crd")]
+    pub crd: u8,
+    #[serde(getter = "StatusField::more")]
+    pub more: bool,
+    #[serde(getter = "StatusField::dnr")]
+    pub dnr: bool,
+}
+
+#[cfg(feature = "serde")]
+impl From<StatusFieldUnpacked> for StatusField {
+    fn from(unpacked: StatusFieldUnpacked) -> Self {
+        let (sct, sc) = unpacked.status_code.into_raw();
+        StatusField::new()
+            .with_phase_tag(unpacked.phase_tag)
+            .with_sc(sc)
+            .with_sct(sct)
+            .with_crd(unpacked.crd)
+            .with_more(unpacked.more)
+            .with_dnr(unpacked.dnr)
+    }
+}
+
 impl StatusField {
     pub fn status_code(&self) -> StatusCode {
         let sc = self.sc();
-        match self.sct() {
+        let sct = self.sct();
+        match &sct {
             StatusCodeType::Generic => FromPrimitive::from_u8(sc).map(StatusCode::Generic),
             StatusCodeType::CmdSpecific => FromPrimitive::from_u8(sc).map(StatusCode::CmdSpecific),
             StatusCodeType::MadIntegrity => {
@@ -44,9 +76,9 @@ impl StatusField {
             }
             StatusCodeType::PathRelated => FromPrimitive::from_u8(sc).map(StatusCode::PathRelated),
             StatusCodeType::VndrSpecific => Some(StatusCode::VndrSpecific(sc)),
-            _ => Some(StatusCode::Unknown(sc)),
+            x => Some(StatusCode::Unknown(*x, sc)),
         }
-        .unwrap_or(StatusCode::Unknown(sc))
+        .unwrap_or(StatusCode::Unknown(sct, sc))
     }
 
     pub fn successful(&self) -> bool {
@@ -55,16 +87,35 @@ impl StatusField {
 }
 
 #[derive(Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(
+    feature = "serde",
+    serde(tag = "type", content = "reason", rename_all = "snake_case")
+)]
 pub enum StatusCode {
     Generic(GenericStatus),
     CmdSpecific(CmdSpecificStatus),
     MadIntegrity(MadIntegrityStatus),
     PathRelated(PathRelatedStatus),
     VndrSpecific(u8),
-    Unknown(u8),
+    Unknown(StatusCodeType, u8),
 }
 
-#[derive(BitfieldSpecifier, Debug, PartialEq, Eq)]
+impl StatusCode {
+    pub fn into_raw(self) -> (StatusCodeType, u8) {
+        match self {
+            StatusCode::Generic(sc) => (StatusCodeType::Generic, sc.to_u8().unwrap()),
+            StatusCode::CmdSpecific(sc) => (StatusCodeType::CmdSpecific, sc.to_u8().unwrap()),
+            StatusCode::MadIntegrity(sc) => (StatusCodeType::MadIntegrity, sc.to_u8().unwrap()),
+            StatusCode::PathRelated(sc) => (StatusCodeType::PathRelated, sc.to_u8().unwrap()),
+            StatusCode::VndrSpecific(sc) => (StatusCodeType::VndrSpecific, sc.to_u8().unwrap()),
+            StatusCode::Unknown(sct, sc) => (sct, sc),
+        }
+    }
+}
+
+#[derive(BitfieldSpecifier, Debug, PartialEq, Eq, Clone, Copy)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[bits = 3]
 pub enum StatusCodeType {
     Generic = 0,
@@ -85,7 +136,9 @@ pub enum StatusCodeType {
 
 #[repr(u8)]
 #[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq, num_derive::FromPrimitive)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
 pub enum GenericStatus {
     Success = 0x00,
     InvalidCmdOpcode = 0x01,
@@ -130,11 +183,11 @@ pub enum GenericStatus {
     FormatInProgress = 0x84,
 }
 
-impl Copy for GenericStatus {}
-
 #[repr(u8)]
 #[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq, num_derive::FromPrimitive)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
 pub enum CmdSpecificStatus {
     CompletionQueueInvalid = 0x00,
     InvalidQueueId = 0x01,
@@ -180,11 +233,11 @@ pub enum CmdSpecificStatus {
     AttemptedWriteToReadOnlyRange = 0x82,
 }
 
-impl Copy for CmdSpecificStatus {}
-
 #[repr(u8)]
 #[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq, num_derive::FromPrimitive)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
 pub enum MadIntegrityStatus {
     WriteFault = 0x80,
     UnrecoveredReadErr = 0x81,
@@ -196,11 +249,11 @@ pub enum MadIntegrityStatus {
     DeallocatedOrUnwrittenLogicalBlock = 0x87,
 }
 
-impl Copy for MadIntegrityStatus {}
-
 #[repr(u8)]
 #[non_exhaustive]
-#[derive(Clone, Debug, PartialEq, Eq, num_derive::FromPrimitive)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "snake_case"))]
 pub enum PathRelatedStatus {
     InternalPathErr = 0x00,
     AsymAccessPersistentLoss = 0x01,
@@ -212,8 +265,6 @@ pub enum PathRelatedStatus {
     HostPathingErr = 0x70,
     CmdAbortedByHost = 0x71,
 }
-
-impl Copy for PathRelatedStatus {}
 
 #[test]
 fn test_from_bytes() {
@@ -230,6 +281,6 @@ fn test_from_bytes() {
     assert!(!StatusField::from_bytes([0b0000_0010, 0b0000_0000]).successful());
     assert_eq!(
         StatusField::from_bytes([0b0010_1110, 0b0000_0000]).status_code(),
-        StatusCode::Unknown(0x17)
+        StatusCode::Unknown(StatusCodeType::Generic, 0x17)
     );
 }

@@ -50,7 +50,7 @@ impl FromBytes for FwSlotLog {
 
 #[bitfield]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct ActiveFwInfo {
     pub active_slot: B3,
     #[skip]
@@ -59,8 +59,6 @@ pub struct ActiveFwInfo {
     #[skip]
     __: B1,
 }
-
-impl Copy for ActiveFwInfo {}
 
 #[cfg(feature = "serde")]
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -72,6 +70,7 @@ struct ActiveFwInfoUnpacked {
     pub next_active: u8,
 }
 
+#[cfg(feature = "serde")]
 impl From<ActiveFwInfoUnpacked> for ActiveFwInfo {
     fn from(unpacked: ActiveFwInfoUnpacked) -> Self {
         ActiveFwInfo::new()

@@ -50,3 +50,19 @@ fn pull_decode_fw_log() {
         serde_json::to_string(FwSlotLog::from_bytes(output.stdout.as_slice()))
     );
 }
+
+#[ignore]
+#[test]
+fn pull_decode_err_log() {
+    println!("{:?}", env::var("OUT_DIR"));
+    let output = Command::new("nvme")
+        .args(&["error-log", "-e", "64", "-o", "binary", "/dev/nvme0"])
+        .output()
+        .expect("failed to pull err log");
+    assert!(output.status.success());
+    println!(
+        "{}",
+        serde_json::to_string_pretty(<[ErrLogEntry]>::from_bytes(output.stdout.as_slice()))
+            .unwrap()
+    );
+}

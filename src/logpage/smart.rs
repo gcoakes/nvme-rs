@@ -86,7 +86,6 @@ pub struct CriticalWarning {
 }
 
 #[bitfield]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct EndurGrpCritWarning {
     pub spare_cap_below_thresh: bool,
     #[skip]

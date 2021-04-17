@@ -22,23 +22,29 @@ use crate::{FromBytes, StatusField};
 use modular_bitfield::prelude::*;
 
 #[repr(packed)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ErrLogEntry {
     pub err_count: u64,
     pub submission_queue_id: u16,
     pub cmd_id: u16,
+    #[cfg_attr(feature = "serde", serde(with = "crate::status::StatusFieldUnpacked"))]
     pub status_field: StatusField,
+    #[cfg_attr(feature = "serde", serde(with = "ParamErrLocUnpacked"))]
     pub param_err_loc: ParamErrLoc,
     pub lba: u64,
     pub nmsp: u32,
     pub vndr_specific_info_avail: u8,
     pub trtype: u8,
+    #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd30: u16,
     pub cmd_specific_info: u64,
     pub transport_type_specific_info: u16,
+    #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd42: [u8; 22],
 }
 
 #[bitfield]
+#[derive(Clone, Copy)]
 pub struct ParamErrLoc {
     pub byte: u8,
     pub bit: B3,
@@ -50,6 +56,25 @@ impl FromBytes for [ErrLogEntry] {
     fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
         let cnt = bytes.len() / std::mem::size_of::<ErrLogEntry>();
         unsafe { std::slice::from_raw_parts(bytes.as_ptr() as *const ErrLogEntry, cnt) }
+    }
+}
+
+#[cfg(feature = "serde")]
+#[derive(serde::Serialize, serde::Deserialize)]
+#[serde(remote = "ParamErrLoc")]
+struct ParamErrLocUnpacked {
+    #[serde(getter = "ParamErrLoc::byte")]
+    pub byte: u8,
+    #[serde(getter = "ParamErrLoc::bit")]
+    pub bit: u8,
+}
+
+#[cfg(feature = "serde")]
+impl From<ParamErrLocUnpacked> for ParamErrLoc {
+    fn from(unpacked: ParamErrLocUnpacked) -> Self {
+        ParamErrLoc::new()
+            .with_byte(unpacked.byte)
+            .with_bit(unpacked.bit)
     }
 }
 
