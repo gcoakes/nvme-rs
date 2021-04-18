@@ -17,7 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-use crate::{FromBytes, Reserved, StatusField};
+use crate::{Reserved, StatusField, TransmuteSafe};
 
 use modular_bitfield::prelude::*;
 
@@ -43,6 +43,8 @@ pub struct ErrLogEntry {
     __rsvd42: Reserved<22>,
 }
 
+impl TransmuteSafe for ErrLogEntry {}
+
 #[bitfield]
 #[derive(Clone, Copy)]
 pub struct ParamErrLoc {
@@ -50,13 +52,6 @@ pub struct ParamErrLoc {
     pub bit: B3,
     #[skip]
     __: B5,
-}
-
-impl FromBytes for [ErrLogEntry] {
-    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
-        let cnt = bytes.len() / std::mem::size_of::<ErrLogEntry>();
-        unsafe { std::slice::from_raw_parts(bytes.as_ptr() as *const ErrLogEntry, cnt) }
-    }
 }
 
 #[cfg(feature = "serde")]

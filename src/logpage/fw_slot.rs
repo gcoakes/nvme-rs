@@ -19,7 +19,7 @@
 
 use std::borrow::Cow;
 
-use crate::{FixedStr, FromBytes, Reserved};
+use crate::{FixedStr, Reserved, TransmuteSafe};
 
 use modular_bitfield::prelude::*;
 
@@ -35,15 +35,11 @@ pub struct FwSlotLog {
     __rsvd64: Reserved<448>,
 }
 
+impl TransmuteSafe for FwSlotLog {}
+
 impl FwSlotLog {
     pub fn get_slot<'a>(&'a self, index: usize) -> Cow<'a, str> {
         self.frs[index].to_string_lossy()
-    }
-}
-
-impl FromBytes for FwSlotLog {
-    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
-        unsafe { &*(bytes.as_ptr() as *const Self) }
     }
 }
 

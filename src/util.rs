@@ -24,7 +24,43 @@ use std::{
 };
 
 pub trait FromBytes {
-    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self;
+    fn from_bytes<'a>(bytes: &'a [u8]) -> Result<&'a Self, usize>;
+}
+
+/// Marker trait to indicate that struct can safely be transmuted or cast from
+/// bytes without any undefined behavior. This means any contained enums fill
+/// their entire repr space. Also, this most likely means the struct is packed.
+pub trait TransmuteSafe {}
+
+impl<T> FromBytes for T
+where
+    T: TransmuteSafe + Sized,
+{
+    fn from_bytes<'a>(bytes: &'a [u8]) -> Result<&'a Self, usize> {
+        if bytes.len() == std::mem::size_of::<Self>() {
+            Ok(unsafe { &*(bytes.as_ptr() as *const Self) })
+        } else {
+            Err(bytes.len())
+        }
+    }
+}
+
+impl<T> FromBytes for [T]
+where
+    T: TransmuteSafe + Sized,
+{
+    fn from_bytes<'a>(bytes: &'a [u8]) -> Result<&'a Self, usize> {
+        if bytes.len() % std::mem::size_of::<T>() == 0 {
+            Ok(unsafe {
+                std::slice::from_raw_parts(
+                    bytes.as_ptr() as *const T,
+                    bytes.len() / std::mem::size_of::<T>(),
+                )
+            })
+        } else {
+            Err(bytes.len())
+        }
+    }
 }
 
 #[repr(transparent)]

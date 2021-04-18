@@ -17,7 +17,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-use crate::{FromBytes, Reserved};
+use crate::{Reserved, TransmuteSafe};
 
 use modular_bitfield::prelude::*;
 
@@ -51,6 +51,8 @@ pub struct SmartLog {
     __rsvd232: Reserved<280>,
 }
 
+impl TransmuteSafe for SmartLog {}
+
 impl SmartLog {
     pub fn has_critical_warning(&self) -> bool {
         self.crit_warning > 0
@@ -63,12 +65,6 @@ impl SmartLog {
     }
     pub fn endur_grp_crit_warning(&self) -> EndurGrpCritWarning {
         EndurGrpCritWarning::from_bytes([self.endur_grp_crit_warning])
-    }
-}
-
-impl FromBytes for SmartLog {
-    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
-        unsafe { &*(bytes.as_ptr() as *const Self) }
     }
 }
 

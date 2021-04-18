@@ -17,15 +17,11 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-use crate::FromBytes;
+use crate::TransmuteSafe;
 
 pub struct IdNmsp([u8; 4096]);
 
-impl FromBytes for IdNmsp {
-    fn from_bytes<'a>(bytes: &'a [u8]) -> &'a Self {
-        unsafe { &*(bytes.as_ptr() as *const Self) }
-    }
-}
+impl TransmuteSafe for IdNmsp {}
 
 #[test]
 fn structure() {

@@ -79,9 +79,10 @@ fn pull_decode_smart() {
         .output()
         .expect("failed to pull smart log");
     assert!(output.status.success());
+    let smart_log = SmartLog::from_bytes(output.stdout.as_slice()).expect("decode smart log");
     println!(
         "{}",
-        serde_json::to_string_pretty(SmartLog::from_bytes(output.stdout.as_slice())).unwrap()
+        serde_json::to_string_pretty(smart_log).expect("serialize smart log")
     );
 }
 
@@ -93,9 +94,10 @@ fn pull_decode_fw_log() {
         .output()
         .expect("failed to pull fw log");
     assert!(output.status.success());
+    let fw_log = FwSlotLog::from_bytes(output.stdout.as_slice()).expect("decode fw log");
     println!(
         "{}",
-        serde_json::to_string_pretty(FwSlotLog::from_bytes(output.stdout.as_slice())).unwrap()
+        serde_json::to_string_pretty(fw_log).expect("serialize fw log")
     );
 }
 
@@ -107,9 +109,9 @@ fn pull_decode_err_log() {
         .output()
         .expect("failed to pull err log");
     assert!(output.status.success());
+    let errs = <[ErrLogEntry]>::from_bytes(output.stdout.as_slice()).expect("decode error log");
     println!(
         "{}",
-        serde_json::to_string_pretty(<[ErrLogEntry]>::from_bytes(output.stdout.as_slice()))
-            .unwrap()
+        serde_json::to_string_pretty(errs).expect("serialize error log")
     );
 }

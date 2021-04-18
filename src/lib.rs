@@ -31,4 +31,4 @@ pub use status::{
 };
 mod util;
 #[doc(inline)]
-pub use util::{FixedStr, FromBytes, Reserved};
+pub use util::{FixedStr, FromBytes, Reserved, TransmuteSafe};
