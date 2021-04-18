@@ -82,11 +82,6 @@
 <span id="79">79</span>
 <span id="80">80</span>
 <span id="81">81</span>
-<span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
-<span id="85">85</span>
-<span id="86">86</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="comment">/*
  * Copyright (C) 2021  Oakes, Gregory C. &lt;gregcoakes@gmail.com&gt;
@@ -107,7 +102,7 @@
  * &lt;http://www.gnu.org/licenses/&gt;.
  */</span>
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">FromBytes</span>, <span class="ident">Reserved</span>, <span class="ident">StatusField</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Reserved</span>, <span class="ident">StatusField</span>, <span class="ident">TransmuteSafe</span>};
 
 <span class="kw">use</span> <span class="ident">modular_bitfield::prelude</span>::<span class="kw-2">*</span>;
 
@@ -133,6 +128,8 @@
     <span class="ident">__rsvd42</span>: <span class="ident">Reserved</span><span class="op">&lt;</span><span class="number">22</span><span class="op">&gt;</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">TransmuteSafe</span> <span class="kw">for</span> <span class="ident">ErrLogEntry</span> {}
+
 <span class="attribute">#[<span class="ident">bitfield</span>]</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ParamErrLoc</span> {
@@ -140,13 +137,6 @@
     <span class="kw">pub</span> <span class="ident">bit</span>: <span class="ident">B3</span>,
     <span class="attribute">#[<span class="ident">skip</span>]</span>
     <span class="ident">__</span>: <span class="ident">B5</span>,
-}
-
-<span class="kw">impl</span> <span class="ident">FromBytes</span> <span class="kw">for</span> [<span class="ident">ErrLogEntry</span>] {
-    <span class="kw">fn</span> <span class="ident">from_bytes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">cnt</span> <span class="op">=</span> <span class="ident">bytes</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="ident">std::mem::size_of</span>::<span class="op">&lt;</span><span class="ident">ErrLogEntry</span><span class="op">&gt;</span>();
-        <span class="kw">unsafe</span> { <span class="ident">std::slice::from_raw_parts</span>(<span class="ident">bytes</span>.<span class="ident">as_ptr</span>() <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">ErrLogEntry</span>, <span class="ident">cnt</span>) }
-    }
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
@@ -175,5 +165,5 @@
     <span class="macro">assert_eq!</span>(<span class="ident">mem::size_of</span>::<span class="op">&lt;</span><span class="ident">ErrLogEntry</span><span class="op">&gt;</span>(), <span class="number">64</span>);
 }
 </pre></div>
-</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="nvme" data-search-js="../../../search-index.js"></div>
+</section><section id="search" class="content hidden"></section><section class="footer"></section><div id="rustdoc-vars" data-root-path="../../../" data-current-crate="nvme" data-search-index-js="../../../search-index.js" data-search-js="../../../search.js"></div>
     <script src="../../../main.js"></script><script src="../../../source-script.js"></script><script src="../../../source-files.js"></script></body></html>
