@@ -115,3 +115,51 @@ impl<const SIZE: usize> TryFrom<String> for FixedStr<SIZE> {
         value.as_bytes().try_into()
     }
 }
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(try_from = "Vec<bool>", into = "Vec<bool>"))]
+pub struct BitArray<const BYTES: usize>([u8; BYTES]);
+
+impl<const BYTES: usize> BitArray<BYTES> {
+    const BITS: usize = BYTES * 8;
+    pub fn get(&self, index: usize) -> Option<bool> {
+        if index >= Self::BITS {
+            None
+        } else {
+            Some(self.0[index / 8] & (1 << (index % 8)) != 0)
+        }
+    }
+
+    pub fn set(&mut self, index: usize, val: bool) {
+        let bit = 1 << (index % 8);
+        if val {
+            self.0[index / 8] |= bit;
+        } else {
+            self.0[index / 8] &= !bit;
+        }
+    }
+}
+
+impl<const BYTES: usize> TryFrom<Vec<bool>> for BitArray<BYTES> {
+    type Error = usize;
+
+    fn try_from(value: Vec<bool>) -> Result<Self, Self::Error> {
+        if value.len() > Self::BITS {
+            Err(value.len())
+        } else {
+            let mut res = Self([0; BYTES]);
+            for (bit, val) in value.into_iter().enumerate() {
+                res.set(bit, val);
+            }
+            Ok(res)
+        }
+    }
+}
+
+impl<const BYTES: usize> Into<Vec<bool>> for BitArray<BYTES> {
+    fn into(self) -> Vec<bool> {
+        (0..BYTES * 8).filter_map(|idx| self.get(idx)).collect()
+    }
+}

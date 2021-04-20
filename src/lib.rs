@@ -17,6 +17,8 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+#![allow(unused_braces)]
+
 mod ident;
 #[doc(inline)]
 pub use ident::*;

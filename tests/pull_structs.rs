@@ -18,6 +18,7 @@
  */
 
 use std::{
+    collections::{HashMap, HashSet},
     fs,
     io::{BufRead, BufReader},
     process::Command,
@@ -114,4 +115,32 @@ fn pull_decode_err_log() {
         "{}",
         serde_json::to_string_pretty(errs).expect("serialize error log")
     );
+}
+
+#[ignore]
+#[test]
+fn pull_decode_id_ctrl() {
+    let ignored: HashSet<_> = ["psds", "rrls"].iter().map(|s| (*s).to_string()).collect();
+    let output = Command::new("nvme")
+        .args(&["id-ctrl", "-o", "binary", get_dev().as_str()])
+        .output()
+        .expect("failed to pull fw log");
+    assert!(output.status.success());
+    let id_ctrl = IdCtrl::from_bytes(output.stdout.as_slice()).expect("decode id ctrl");
+    let id_ctrl_str: String = serde_json::to_string(id_ctrl).expect("serialize id ctrl");
+    let id_ctrl_json: HashMap<String, serde_json::Value> =
+        serde_json::from_str(id_ctrl_str.as_str()).unwrap();
+    let output = Command::new("nvme")
+        .args(&["id-ctrl", "-o", "json", get_dev().as_str()])
+        .output()
+        .expect("failed to pull fw log json");
+    assert!(output.status.success());
+    let reference: HashMap<String, serde_json::Value> =
+        serde_json::from_slice(output.stdout.as_slice()).expect("deserialize reference");
+    for (k, v) in id_ctrl_json.iter() {
+        if !reference.contains_key(k.as_str()) || ignored.contains(k) {
+            continue;
+        }
+        assert_eq!(reference.get(k).unwrap(), v, "{}", k);
+    }
 }
