@@ -19,6 +19,9 @@
 
 #![allow(unused_braces)]
 
+#[macro_use]
+extern crate structural_assert;
+
 mod ident;
 #[doc(inline)]
 pub use ident::*;

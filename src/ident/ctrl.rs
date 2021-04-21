@@ -21,106 +21,189 @@ use crate::{util::BitArray, FixedStr, Reserved, TransmuteSafe};
 
 use modular_bitfield::prelude::*;
 
-#[repr(packed)]
+#[test_structure(size = 4096)]
+#[repr(C)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct IdCtrl {
+    #[loc(0:1)]
     pub vid: u16,
+    #[loc(2:3)]
     pub ssvid: u16,
+    #[loc(4:23)]
     pub sn: FixedStr<20>,
+    #[loc(24:63)]
     pub mn: FixedStr<40>,
+    #[loc(64:71)]
     pub fr: FixedStr<8>,
+    #[loc(72:72)]
     pub rab: u8,
+    #[loc(73:75)]
     pub ieee: Ieee,
+    #[loc(76:76)]
     pub cmic: Cmic,
+    #[loc(77:77)]
     pub mdts: u8,
+    #[loc(78:79)]
     pub cntlid: u16,
+    #[loc(80:83)]
     pub ver: u32,
+    #[loc(84:87)]
     pub rtd3r: u32,
+    #[loc(88:91)]
     pub rtd3e: u32,
+    #[loc(92:95)]
     pub oaes: Oaes,
+    #[loc(96:99)]
     pub ctrattr: CtrlAttr,
+    #[loc(100:101)]
     pub rrls: BitArray<2>,
+    #[loc(102:110)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd102: Reserved<9>,
+    #[loc(111:111)]
     pub cntrltype: CtrlType,
     // TODO: Assess whether this has any value in destructured form. It appears
     // to simply be a unique identifier for the type of device.
     /// FRU Globally Unique Identifier (Big Endian)
+    #[loc(112:127)]
     pub fguid: u128,
+    #[loc(128:133)]
     pub crdt: [u16; 3],
+    #[loc(134:239)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd134: Reserved<106>,
     // Separately defined reserved because the second one is from the NVMe-MI
     // spec.
+    #[loc(240:252)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd240: Reserved<13>,
+    #[loc(253:253)]
     pub nvmsr: Nvmsr,
+    #[loc(254:254)]
     pub vwci: Vwci,
+    #[loc(255:255)]
     pub mec: Mec,
+    #[loc(256:257)]
     pub oacs: Oacs,
+    #[loc(258:258)]
     pub acl: u8,
+    #[loc(259:259)]
     pub aerl: u8,
+    #[loc(260:260)]
     pub frmw: Frmw,
+    #[loc(261:261)]
     pub lpa: Lpa,
+    #[loc(262:262)]
     pub elpe: u8,
+    #[loc(263:263)]
     pub npss: u8,
+    #[loc(264:264)]
     pub avscc: Avscc,
+    #[loc(265:265)]
     pub apsta: Apsta,
+    #[loc(266:267)]
     pub wctemp: u16,
+    #[loc(268:269)]
     pub cctemp: u16,
+    #[loc(270:271)]
     pub mtfa: u16,
+    #[loc(272:275)]
     pub hmpre: u32,
+    #[loc(276:279)]
     pub hmmin: u32,
+    #[loc(280:295)]
     pub tnvmcap: u128,
+    #[loc(296:311)]
     pub unvmcap: u128,
+    #[loc(312:315)]
     pub rpmbs: Rpmbs,
+    #[loc(316:317)]
     pub edst: u16,
+    #[loc(318:318)]
     pub dsto: Dsto,
+    #[loc(319:319)]
     pub fwug: u8,
+    #[loc(320:321)]
     pub kas: u16,
+    #[loc(322:323)]
     pub hctma: Hctma,
+    #[loc(324:325)]
     pub mntmt: u16,
+    #[loc(326:327)]
     pub mxtmt: u16,
+    #[loc(328:331)]
     pub sanicap: Sanicap,
+    #[loc(332:335)]
     pub hmminds: u32,
+    #[loc(336:337)]
     pub hmmaxd: u16,
+    #[loc(338:339)]
     pub nsetidmax: u16,
+    #[loc(340:341)]
     pub endgidmax: u16,
+    #[loc(342:342)]
     pub anatt: u8,
+    #[loc(343:343)]
     pub anacap: Anacap,
+    #[loc(344:347)]
     pub anagrpmax: u32,
+    #[loc(348:351)]
     pub nanagrpid: u32,
+    #[loc(352:355)]
     pub pels: u32,
+    #[loc(356:511)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd356: Reserved<156>,
+    #[loc(512:512)]
     pub sqes: QueueEntrySize,
+    #[loc(513:513)]
     pub cqes: QueueEntrySize,
+    #[loc(514:515)]
     pub maxcmd: u16,
+    #[loc(516:519)]
     pub nn: u32,
+    #[loc(520:521)]
     pub oncs: Oncs,
+    #[loc(522:523)]
     pub fuses: Fuses,
+    #[loc(524:524)]
     pub fna: Fna,
+    #[loc(525:525)]
     pub vwc: u8,
+    #[loc(526:527)]
     pub awun: u16,
+    #[loc(528:529)]
     pub awupf: u16,
+    #[loc(530:530)]
     pub nvscc: Nvscc,
+    #[loc(531:531)]
     pub nwpc: Nwpc,
+    #[loc(532:533)]
     pub acwu: u16,
+    #[loc(534:535)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd534: Reserved<2>,
+    #[loc(536:539)]
     pub sgls: Sgls,
+    #[loc(540:543)]
     pub mnan: u32,
+    #[loc(544:767)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd544: Reserved<224>,
     // TODO: Properly handle null termination.
+    #[loc(768:1023)]
     pub subnqn: FixedStr<256>,
+    #[loc(1024:1791)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd1024: Reserved<768>,
     // TODO: NVMe over Fabrics.
+    #[loc(1792:2047)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd1792: Reserved<256>,
 
+    #[loc(2048:3071)]
     pub psds: [PowerState; 32],
+    #[loc(3072:4095)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd3072: Reserved<1024>,
 }
@@ -604,12 +687,4 @@ impl From<PowerState> for PowerStateUnpacked {
             aps: packed.aps(),
         }
     }
-}
-
-#[test]
-fn structure() {
-    use memoffset::offset_of;
-    use std::mem::size_of;
-    assert_eq!(offset_of!(IdCtrl, ver), 80);
-    assert_eq!(size_of::<IdCtrl>(), 4096);
 }

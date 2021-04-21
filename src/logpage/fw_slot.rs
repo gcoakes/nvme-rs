@@ -23,14 +23,19 @@ use crate::{FixedStr, Reserved, TransmuteSafe};
 
 use modular_bitfield::prelude::*;
 
-#[repr(packed)]
+#[test_structure(size = 512)]
+#[repr(C)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct FwSlotLog {
+    #[loc(0:0)]
     #[cfg_attr(feature = "serde", serde(with = "ActiveFwInfoUnpacked"))]
     pub afi: ActiveFwInfo,
+    #[loc(1:7)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd1: Reserved<7>,
+    #[loc(8:63)]
     pub frs: [FixedStr<8>; 7],
+    #[loc(64:511)]
     #[cfg_attr(feature = "serde", serde(skip))]
     __rsvd64: Reserved<448>,
 }
@@ -72,10 +77,4 @@ impl From<ActiveFwInfoUnpacked> for ActiveFwInfo {
             .with_active_slot(unpacked.active_slot)
             .with_next_active(unpacked.next_active)
     }
-}
-
-#[test]
-fn structure() {
-    use std::mem;
-    assert_eq!(mem::size_of::<FwSlotLog>(), 512);
 }

@@ -158,8 +158,8 @@ impl<const BYTES: usize> TryFrom<Vec<bool>> for BitArray<BYTES> {
     }
 }
 
-impl<const BYTES: usize> Into<Vec<bool>> for BitArray<BYTES> {
-    fn into(self) -> Vec<bool> {
-        (0..BYTES * 8).filter_map(|idx| self.get(idx)).collect()
+impl<const BYTES: usize> From<BitArray<BYTES>> for Vec<bool> {
+    fn from(value: BitArray<BYTES>) -> Self {
+        (0..BYTES * 8).filter_map(|idx| value.get(idx)).collect()
     }
 }
