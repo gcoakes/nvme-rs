@@ -20,7 +20,7 @@
 #![allow(unused_braces)]
 
 #[macro_use]
-extern crate structural_assert;
+extern crate transmute_tools;
 
 mod ident;
 #[doc(inline)]

@@ -21,6 +21,7 @@ use crate::{util::BitArray, FixedStr, Reserved, TransmuteSafe};
 
 use modular_bitfield::prelude::*;
 
+#[endianness(le)]
 #[test_structure(size = 4096)]
 #[repr(C)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -65,6 +66,7 @@ pub struct IdCtrl {
     // TODO: Assess whether this has any value in destructured form. It appears
     // to simply be a unique identifier for the type of device.
     /// FRU Globally Unique Identifier (Big Endian)
+    #[be]
     #[loc(112:127)]
     pub fguid: u128,
     #[loc(128:133)]
